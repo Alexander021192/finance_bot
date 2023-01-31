@@ -1,4 +1,4 @@
-package model
+package msg
 
 import (
 	"testing"
@@ -24,13 +24,17 @@ func TestOnStartIncomingMessage(t *testing.T) {
 
 }
 
-type mockSender struct {
-	text   string
-	userID int64
-}
+func TestUnknownCommandIncomingMessage(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	sender := mocks.NewMockMessageSender(ctrl)
+	model := NewModel(sender)
 
-func (m *mockSender) SendMessage(text string, userID int64) error {
-	m.text = text
-	m.userID = userID
-	return nil
+	sender.EXPECT().SendMessage("не знаю эту команду", int64(123))
+
+	err := model.IncomingMessage(Message{
+		Text:   "start",
+		UserID: 123,
+	})
+
+	assert.NoError(t, err)
 }

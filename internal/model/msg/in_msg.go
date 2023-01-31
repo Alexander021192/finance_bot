@@ -1,4 +1,4 @@
-package model
+package msg
 
 type MessageSender interface {
 	SendMessage(text string, userID int64) error
@@ -22,6 +22,10 @@ type Message struct {
 
 
 func (m *Model) IncomingMessage(msg Message) error {
-	m.tgClient.SendMessage("hello", msg.UserID)
+	if msg.Text == "/start" {
+		m.tgClient.SendMessage("hello", msg.UserID)
+		return nil
+	}
+	m.tgClient.SendMessage("не знаю эту команду", msg.UserID)
 	return nil
 }
